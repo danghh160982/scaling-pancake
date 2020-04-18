@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 eval $(ssh-agent -s)
 if [ -d "7_trinhvt" ]; then
   cd 7_trinhvt
@@ -10,13 +11,12 @@ fi
 
 CURRENT_TIME=$(date +%Y-%m-%d__%H_%M_%S)
 LOG_FILE=/tmp/project/project.uwsgi.log
-mv ${LOG_FILE} /tmp/project/project.uwsgi.${CURRENT_TIME}.log
+[ -f ${LOG_FILE} ] && mv ${LOG_FILE} /tmp/project/project.uwsgi.${CURRENT_TIME}.log
 
-MASTER_PROCESS=$(ps aux | grep uwsgi | awk '{print $2}' | head -n 1)
-
-if [ ${MASTER_PROCESS} ]; then
-    kill -9 ${MASTER_PROCESS}
-fi
+MASTER_PROCESS=$(ps aux | grep uwsgi | grep -v grep | awk '{print $2}' | head -n 1)
+[ ${MASTER_PROCESS} ] && kill -9 ${MASTER_PROCESS}
 
 cd backend
-uwsgi project.ini
+whoami
+pwd
+/home/deploy/anaconda3/envs/project/bin/uwsgi project.ini
